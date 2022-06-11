@@ -129,6 +129,51 @@ class Media:
                         },
                     ],
                 },
+                'chat_kick': {
+                    'cmd': [
+                        'кик'
+                    ], 
+                    'rule': 'chat_kick',
+                    'maxid': -1,
+                    'boolstr': 0,
+                    'replycount': 'random',
+                    'reply':[
+                        {
+                            'messageText': 'Исключаю пользователя...',
+                            'messageAttachment': ''
+                        },
+                    ],
+                },
+                'chat_ban': {
+                    'cmd': [
+                        'кик'
+                    ], 
+                    'rule': 'chat_ban',
+                    'maxid': -1,
+                    'boolstr': 0,
+                    'replycount': 'random',
+                    'reply':[
+                        {
+                            'messageText': 'Пользователь в чёрном списке. Нигадяй.',
+                            'messageAttachment': ''
+                        },
+                    ],
+                },
+                'chat_unban': {
+                    'cmd': [
+                        'кик'
+                    ], 
+                    'rule': 'chat_unban',
+                    'maxid': -1,
+                    'boolstr': 0,
+                    'replycount': 'random',
+                    'reply':[
+                        {
+                            'messageText': 'Выношу пользователя из списка. Неужели есть добрые люди...',
+                            'messageAttachment': ''
+                        },
+                    ],
+                },
                 'unknown': {
                     'cmd': [
                         '$$$ dont required $$$'
@@ -144,10 +189,6 @@ class Media:
                         },
                         {
                             'messageText':'{from_id_name}, БИП БОП БУП. БУП БИП?',
-                            'messageAttachment': ''
-                        },
-                        {
-                            'messageText':'{from_id_name}, "{your_text}"? Это как?',
                             'messageAttachment': ''
                         },
                     ]
@@ -169,15 +210,12 @@ class Media:
                 },
                 {from_id_name}, {second_id_name}
                 {chat_name}, {descr}, {member_count}, {member_count_bl}
-                {admin_list}, {black_list}
+                {admin_list}, {black_list}, {ban_reason}, {online}
                 {your_text}
                 """
             }
         }
 
-    def get(self, **kwargs):
-        setstr = self.args[kwargs['name']]
-        return setstr[random.randint(0,len(setstr))].format(**kwargs)
     def define(self, **kwargs):
         text, cmd, rule, maxid, string = kwargs['text'], '', 'null', 0, ''
         for i in self.args.names:
@@ -211,8 +249,15 @@ class Media:
         return {
             'cmd': cmd, 'rule': rule, 'maxids': maxid, 'string': string
         }
-    def add_replies(self, **kwargs):
-        return pass
+    def get(self, cmdkind, formatt):
+        if self.args['kind'][cmdkind]['replycount'] == 'random':
+            lim.append(self.args['kind'][cmdkind]['reply'][random.randint(0,len(setstr))].format(**formatt))
+        elif self.args['kind'][cmdkind]['replycount'] == 'cycle':
+            lim = []
+            for i in self.args['kind'][cmdkind]['reply']:
+                lim.append(i)
+        return lim
+
     """
 
     name начать / null
