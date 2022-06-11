@@ -1,45 +1,42 @@
-import six
 import random
+import glob
+import importlib
 
+from os.path import dirname
+from os.path import basename
+from os.path import isfile
+from os.path import join
 
-class getmethod(object):
-    __slots__ = ('_vk', '_method')
-    def __init__(self, vk, method=None):
-        self._vk = vk
-        self._method = method
+def directory(file):
+    return dirname(file)
 
-
-    def __getattr__(self, method):
-        if '_' in method:
-            m = method.split('_')
-            method = m[0] + ''.join(i.title() for i in m[1:])
-
-        return getmethod(self._vk, (self._method + '.' if self._method else '') + method)
-
-
-    def __call__(self, **kwargs):
-        for k, v in six.iteritems(kwargs):
-            if isinstance(v, (list, tuple)):
-                kwargs[k] = ','.join(str(x) for x in v)
-
-        return self._vk.method(self._method, kwargs)
-
+def connectLibrary(directory):
+    a = glob.glob(join(directory + '\\library\\', "*.py"))
+    b, c = [basename(f)[:-3] for f in a if isfile(f)], {}
+    for obj in b:
+        c[obj] = getattr(importlib.import_module('library.' + obj), 'Object')()
+    return c
 
 class tools(object):
     def __init__(self, api):
         self.api = api
 
+
     def send(self, peer_id, message, attachment):
         self.api.messages.send(random_id = random.randint(0,999999), peer_id = peer_id, message = message, attachment = attachment)
+
 
     def getchat(self, chat_id):
         pass
 
+
     def getmembers(self, chat_id):
         pass
 
+
     def isadmin(self, chat_id, user_id):
         pass
+
 
     def isowner(self, chat_id, user_id):
         pass
@@ -47,6 +44,7 @@ class tools(object):
 
     def getmention(self, user_id):
         return f'[id{user_id}|id1]'
+
 
     def kick(self, chat_id, user_id):
         result = self.api.messages.removeChatUser(chat_id = chat_id - 2000000000, member_id = user_id)
