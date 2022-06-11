@@ -1,16 +1,16 @@
-import random
-import wikipedia
+import random, pyowm
 
 class Object():
     def __init__(self):
-        wikipedia.set_lang('ru')
+        self.owm = pyowm.OWM('115fe76805a81b92ea81a3a280763fda')
+        self.mgr = self.owm.weather_manager()
         self.args = {
-                'name': 'Википедия (016)',
+                'name': 'Open Weather Map (016)',
                 'author': 'andrew prokofieff',
                 'type': 'user',
                 'commands': {
-                    'wikia': [
-                            'поиск',
+                    'weather': [
+                            'погода',
                         ]
                 },
                 'replies': {
@@ -19,6 +19,7 @@ class Object():
                         ],
                 }
             }
+
     def getCommandDict(self):
         return {
             'cmd': self.args['commands'],
@@ -34,7 +35,7 @@ class Object():
         cmd_class = dict['cmd_class']
         args = dict['args']
 
-        if cmd_class == 'wikia':
+        if cmd_class == 'weather':
             lim.append({
                 'message': self.search(args), 
                 'media': ''
@@ -46,12 +47,18 @@ class Object():
                 'rules': rules,
                 'lim': lim,
             }
+            
+    def search(self, city):
+            try:
+                observation = self.mgr.weather_at_place(city)
+                w = observation.weather
+                temp = w.temperature('celsius')
 
-    def search(self, req):
-        try:
-            return "{}\nИсточник {}".format(wikipedia.summary(req, sentences=5), wikipedia.page(req).url)
-        except:
-            return "Ошибка."
+                result = 'Погода в городе {}\n\nВетер: {} м/с,\nВлажность: {}%,\nТемпература: {}°С'.format(
+                    city.title(), w.wind()['speed'], w.humidity, temp['temp'])
+                return result
+            except:
+                return 'Ничего не найдено, возможно произошла ошибка, повторите позже.'
 
 if __name__ == "__main__":
     test = Object()

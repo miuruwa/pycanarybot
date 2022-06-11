@@ -1,16 +1,14 @@
 import random
-import wikipedia
 
 class Object():
     def __init__(self):
-        wikipedia.set_lang('ru')
         self.args = {
-                'name': 'Википедия (016)',
+                'name': 'CanaryBot 016 Plugin Example',
                 'author': 'andrew prokofieff',
-                'type': 'user',
+                'type': 'chat',
                 'commands': {
-                    'wikia': [
-                            'поиск',
+                    'test': [
+                            'команда',
                         ]
                 },
                 'replies': {
@@ -19,6 +17,7 @@ class Object():
                         ],
                 }
             }
+
     def getCommandDict(self):
         return {
             'cmd': self.args['commands'],
@@ -32,11 +31,12 @@ class Object():
         rules = ''
 
         cmd_class = dict['cmd_class']
-        args = dict['args']
+        # args = dict['args']
+        # на случай если надо будет вспомогательные аргументы :D
 
-        if cmd_class == 'wikia':
+        if cmd_class == 'test':
             lim.append({
-                'message': self.search(args), 
+                'message': self.getReply('test'), 
                 'media': ''
             })
         else:
@@ -46,12 +46,6 @@ class Object():
                 'rules': rules,
                 'lim': lim,
             }
-
-    def search(self, req):
-        try:
-            return "{}\nИсточник {}".format(wikipedia.summary(req, sentences=5), wikipedia.page(req).url)
-        except:
-            return "Ошибка."
 
 if __name__ == "__main__":
     test = Object()
