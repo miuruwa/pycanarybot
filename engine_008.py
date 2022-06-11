@@ -21,17 +21,26 @@ def init(t, i):
     print('\u0009VK API connected')
     
     media = {
-        'img_standart': uploadPhoto(open('img/standart.jpg', 'rb')),
-        'img_start': uploadPhoto(open('img/GEFtHBhVNWY.jpg', 'rb')),
-        'img_ban': uploadPhoto(open('img/A_L3s3rLUYw.jpg', 'rb')),
-        'img_bankick': uploadPhoto(open('img/xmlC4Gw_cec.jpg', 'rb')),
-        'img_unban': uploadPhoto(open('img/jvtC37Z-638.jpg', 'rb')),
-        'img_viphelp': uploadPhoto(open('img/mlKMUJfXDMo.jpg', 'rb')),
-        'img_vipfail': uploadPhoto(open('img/QiroYk61PME.jpg', 'rb')),
-        'img_admfail': uploadPhoto(open('img/6qZOPIFLhWA.jpg', 'rb')),
-        'img_admcheck': uploadPhoto(open('img/qNhS7Z1Po9M.jpg', 'rb')),
-        'video_admhelp': 'video-193595427_456239018',
-        'video_work': 'video-193492235_456239027',
+            'attachment': {
+                'img_standart': 'photo-195675828_457241078',
+                'img_start': 'photo-195675828_457241070',
+                'img_ban': 'photo-195675828_457241069',
+                'img_bankick': 'photo-195675828_457241081',
+                'img_unban': 'photo-195675828_457241072',
+                'img_viphelp': 'photo-195675828_457241071',
+                'img_vipfail': 'photo-195675828_457241076',
+                'img_admfail': 'photo-195675828_457241068',
+                'img_admcheck': 'photo-195675828_457241077',
+                'video_admhelp': 'video-193595427_456239018',
+                'video_work': 'video-193492235_456239027',
+            },
+            'replicas': {
+                'questionsimple': ['Нет', 'Не совсем', 'Совсем нет', 'Ну почти', 'Плюс-минус', 'Да', 'Ну почти', 'Да, скорее всего', 'ДАДАДА','НЕЕЕТ', 'НЕЕЕЕ'],
+                'questionwhy': ['Потому что потому', 'Так как ты дебил', 'А ведь ты плахой', 'Потому что сам виноват'],
+                'questionwhen': ['reactwhen'],
+                'questionhow': ['reacthow'],
+                'questioncost': ['reactcost'],
+            }
         }
     print('\u0009Media connected')
     
@@ -40,6 +49,9 @@ def init(t, i):
     print('\u0009DB connected')
 
     while initWork:
+
+        #ваши события
+
         for event in longpoll.check():
             if event.type == VkBotEventType.MESSAGE_NEW:
                 request = {
@@ -60,20 +72,48 @@ def init(t, i):
                     pass
 
                 
-                result = react(request)
-                if result['type'] != '':
-                    print('\u0009{} {}-{}\n\u0009\u0009Message: {}\n\u0009\u0009ReactType: {}\n'.format(str(datetime.datetime.now()), request['chat_id'], request['user_id'], request['messageText'], result['type']))
-                for item in result['items']:
-                    vk.messages.send(random_id=random.randint(0, 999999), message=item['messageText'], attachment = item['messageAttachment'], peer_id=request['chat_id'])
-                if result['rule'] == 'send':
+                try:
+                    result = react(request)
+                    if result['type'] != '':
+                        print('\u0009{} {}-{}\n\u0009\u0009Message: {}\n\u0009\u0009ReactType: {}\n'.format(str(datetime.datetime.now()), request['chat_id'], request['user_id'], request['messageText'], result['type']))
+                    for item in result['items']:
+                        vk.messages.send(random_id=random.randint(0, 999999), message=item['messageText'], attachment = item['messageAttachment'], peer_id=request['chat_id'])
+                    if result['rule'] == 'send':
+                        pass
+                    elif result['rule'] == 'chat_info':
+                        resource = getChatInfo(request['chat_id'])
+                        listOfMessages = {
+                            'messageText': '"{}"\nID чата в базе данных: {}\n\nОписание: {}'.format(resource['name'],str(request['chat_id']-2000000000), resource['description']),
+                            'messageAttachment': resource['attachment']
+                        }
+                        vk.messages.send(random_id=random.randint(0, 999999), message=listOfMessages['messageText'], attachment=listOfMessages['messageAttachment'], peer_id=request['chat_id'])
+                    elif result['rule'] == 'chat_blacklist':
+                        resource = getChatBan(request['chat_id'])
+                        listOfMessages = {
+                            'messageText': resource,
+                            'messageAttachment': ''
+                        }
+                        try:
+                            vk.messages.send(random_id=random.randint(0, 999999), message=listOfMessages['messageText'], attachment=listOfMessages['messageAttachment'], peer_id=request['chat_id'])
+                        except:
+                            vk.messages.send(random_id=random.randint(0, 999999), message='а где', peer_id=request['chat_id'])
+                    elif result['rule'] == 'chat_adminlist':
+                        resource = getChatAdmin(request['chat_id'])
+                        text = 'Чёрный список беседы:' + resource
+                        listOfMessages = {
+                            'messageText': resource,
+                            'messageAttachment': ''
+                        }
+                        vk.messages.send(random_id=random.randint(0, 999999), message=listOfMessages['messageText'], attachment=listOfMessages['messageAttachment'], peer_id=request['chat_id'])
+                    elif result['rule'] == 'kick':
+                        try:
+                            vk.messages.removeChatUser(chat_id = request['chat_id']-2000000000, user_id = result['subUser'])
+                        except:
+                            vk.messages.send(random_id=random.randint(0, 999999), message='Не получилось кикнуть пользователя.', attachment = '', peer_id=request['chat_id'])
+                    elif result['rule'] == 'close':
+                        initWork = False
+                except:
                     pass
-                elif result['rule'] == 'kick':
-                    try:
-                        vk.messages.removeChatUser(chat_id = request['chat_id']-2000000000, user_id = result['subUser'])
-                    except:
-                        vk.messages.send(random_id=random.randint(0, 999999), message='Не получилось кикнуть пользователя.', attachment = '', peer_id=request['chat_id'])
-                elif result['rule'] == 'close':
-                    initWork = False 
 
 def uploadPhoto(img):
     b = requests.post(vkPhoto['upload_url'], files={'photo': img}).json()
@@ -155,11 +195,17 @@ def updChatInfo_attachment(chat_id: int, chatAtt: str):
 
 def getChatBan(chat_id: int):
     text = ''
-    c.execute("SELECT user_id, reason, try FROM banlist WHERE chat_id = ?", (chat_id,))
+    c.execute("SELECT user_id, reason FROM banlist WHERE chat_id = ?", (chat_id,))
     for i in c.fetchall():
-        (user_id, reason, att) = i
-        res = getName(user_id)
-        text = text + '\n\u2022 ' + res['res'] + ' ('+ kind(user_id) +')'
+        (user_id, reason) = i
+        res = getUserBD(chat_id, user_id)['name']
+        text = text + '\u2022 ' + res + ' ('+ reason +')\n'
+    return text
+def getChatAdmin(chat_id: int):
+    resource = vk_getChat(chat_id)['chat_settings']
+    text = '\u2022 '+getUserBD(chat_id, resource['owner_id'])['name'] + ' (Основатель беседы)'
+    for i in resource['admin_ids']:
+        text = text + '\n\u2022 '+getUserBD(chat_id, i)['name']
     return text
 
 def react(r):
@@ -205,7 +251,7 @@ def react(r):
                 elif text.lower() == 'работай':
                     listOfMessages.append({
                         'messageText': '{},'.format(getUserBDres['name']),
-                        'messageAttachment': media['video_work']
+                        'messageAttachment': media['attachment']['video_work']
                     })
                     typeMess = 'messageReact'
                 elif text.lower() == 'пожалей' and getUserBDres['admStatus']:
@@ -223,7 +269,7 @@ def react(r):
                     else:
                         listOfMessages.append({
                             'messageText': '{}, посмотри лучше это:'.format(getUserBDres['name']),
-                            'messageAttachment': media['video_admhelp']
+                            'messageAttachment': media['attachment']['video_admhelp']
                         })
                     typeMess = 'messageReact'
                 elif text.lower() == 'инфа о беседе':
@@ -231,57 +277,56 @@ def react(r):
                         'messageText': 'Хорошо, {} вот информация о беседе:'.format(getUserBDres['name']),
                         'messageAttachment': ''
                     })
-                    resource = getChatInfo(r['chat_id'])
-                    listOfMessages.append({
-                        'messageText': '"{}"\nID чата в базе данных: {}\n\nОписание: {}'.format(resource['name'],str(r['chat_id']-2000000000), resource['description']),
-                        'messageAttachment': resource['attachment']
-                    })
+                    rule = 'chat_info'
                     typeMess = 'messageChatInfoShort'
                 elif text.lower() == 'кто админ':
                     listOfMessages.append({
-                        'messageText': '{},'.format(getUserBDres['name']),
+                        'messageText': '{}, вот кто бака:'.format(getUserBDres['name']),
                         'messageAttachment': ''
                     })
+                    rule = 'chat_adminlist'
                     typeMess = 'messageChatInfoAdm'
                 elif text.lower() == 'кто в чс':
                     listOfMessages.append({
-                        'messageText': '{},'.format(getUserBDres['name']),
+                        'messageText': '{}, вот чёрный список беседы: '.format(getUserBDres['name']),
                         'messageAttachment': ''
                     })
+                    rule = 'chat_blacklist'
                     typeMess = 'messageChatInfoBL'
-                elif text[0:8].lower() == 'кто такой':
+                elif text[0:8].lower() == 'кто Такой':
                     listOfMessages.append({
                         'messageText': '{},'.format(getUserBDres['name']),
                         'messageAttachment': ''
                     })
                     typeMess = 'messageUserInfoBD'
-                elif text[0:13].lower() == 'чат название ':
-                    updChatInfo_name(r['chat_id'], text[13:len(text)])
-                    listOfMessages.append({
-                        'messageText': '{}, название изменено на "{}"'.format(getUserBDres['name'], text[13:len(text)]),
-                        'messageAttachment': ''
-                    })
-                    typeMess = 'messageChangeChatName'
-                elif text[0:12].lower() == 'чат описание':
-                    updChatInfo_description(r['chat_id'], text[13:len(text)])
-                    listOfMessages.append({
-                        'messageText': '{}, описание успешно изменено'.format(getUserBDres['name']),
-                        'messageAttachment': ''
-                    })
-                    typeMess = 'messageChangeChatDescription'
-                elif text[0:12].lower() == 'чат вложение':
-                    listOfMessages.append({
-                        'messageText': '{},'.format(getUserBDres['name']),
-                        'messageAttachment': ''
-                    })
-                    typeMess = 'messageChangeChatAttachment'
                 elif text[0:text.find(' ')].lower() == 'ник' and updName(r['user_id'], text[text.find(' ')+1:len(text)]) == 2:
                     listOfMessages.append({
                         'messageText': 'Поздравляем, {} сменил ник на {}'.format(getUserBDres['name'], text[text.find(' ')+1:len(text)]),
                         'messageAttachment': ''
                     })
                     typeMess = 'messageChangeNickname'
-                elif text[0:text.find(' ')].lower() == 'кик' and text.count('[id') == 1 and text.count('|') == 1 and text.count(']') == 1:
+                elif text[0:13].lower() == 'чат название ' and getUserBDres['modStatus'] == True:
+                    updChatInfo_name(r['chat_id'], text[13:len(text)])
+                    listOfMessages.append({
+                        'messageText': '{}, название изменено на "{}"'.format(getUserBDres['name'], text[13:len(text)]),
+                        'messageAttachment': ''
+                    })
+                    typeMess = 'messageChangeChatName'
+                elif text[0:12].lower() == 'чат описание' and getUserBDres['modStatus'] == True:
+                    updChatInfo_description(r['chat_id'], text[13:len(text)])
+                    listOfMessages.append({
+                        'messageText': '{}, описание успешно изменено'.format(getUserBDres['name']),
+                        'messageAttachment': ''
+                    })
+                    typeMess = 'messageChangeChatDescription'
+                elif text[0:12].lower() == 'чат вложение' and getUserBDres['modStatus'] == True:
+                    updChatInfo_attachment(r['chat_id'], text[13:len(text)])
+                    listOfMessages.append({
+                        'messageText': '{},'.format(getUserBDres['name']),
+                        'messageAttachment': ''
+                    })
+                    typeMess = 'messageChangeChatAttachment'
+                elif text[0:text.find(' ')].lower() == 'кик' and text.count('[id') == 1 and text.count('|') == 1 and text.count(']') == 1 and getUserBDres['modStatus'] == True:
                     subUser = int(text[text.find('[id')+3:text.find('|')])
                     getUserBDsubRes = getUserBD(r['chat_id'], subUser)
                     listOfMessages.append({
@@ -290,7 +335,7 @@ def react(r):
                     })
                     typeMess = 'messageChatKick'
                     rule = 'kick'
-                elif text[0:text.find(' ')].lower() == 'бан' and text.count('[id') == 1 and text.count('|') == 1 and text.count(']') == 1:
+                elif text[0:text.find(' ')].lower() == 'бан' and text.count('[id') == 1 and text.count('|') == 1 and text.count(']') == 1 and getUserBDres['modStatus'] == True:
                     subUser = int(text[text.find('[id')+3:text.find('|')])
                     getUserBDsubRes = getUserBD(r['chat_id'], subUser)
                     reason = text[text.find(']')+2:len(text)]
@@ -298,48 +343,75 @@ def react(r):
                     conn.commit()
                     listOfMessages.append({
                         'messageText': '{} забанил {}. нигадяй'.format(getUserBDres['name'], getUserBDsubRes['name']),
-                        'messageAttachment': media['img_ban']
+                        'messageAttachment': media['attachment']['img_ban']
                         })
                     typeMess = 'messageChatBan'
                     rule = 'ban'
-                elif text[0:text.find(' ')].lower() == 'разбан' and text.count('[id') == 1 and text.count('|') == 1 and text.count(']') == 1:
+                elif text[0:text.find(' ')].lower() == 'разбан' and text.count('[id') == 1 and text.count('|') == 1 and text.count(']') == 1 and getUserBDres['modStatus'] == True:
                     subUser = int(text[text.find('[id')+3:text.find('|')])
                     getUserBDsubRes = getUserBD(r['chat_id'], subUser)
                     c.execute("DELETE FROM banlist WHERE chat_id = ? AND user_id = ?", (r['chat_id'], subUser))
                     listOfMessages.append({
                         'messageText': '{} разбанил {}. Неужли есть добрые люди..'.format(getUserBDres['name'], getUserBDsubRes['name']),
-                        'messageAttachment': media['img_unban']
+                        'messageAttachment': media['attachment']['img_unban']
                         })
                     typeMess = 'messageChatUnban'
-                elif text.lower() == 'добавь беседу':
+                elif text.lower() == 'добавь беседу'and getUserBDres['modStatus'] == True:
                     listOfMessages.append({
                         'messageText': '{},'.format(getUserBDres['name']),
                         'messageAttachment': ''
                     })
                     typeMess = 'messageChatlistAdd'
-                elif text.lower() == 'обнови беседу':
+                elif text.lower() == 'обнови беседу'and getUserBDres['modStatus'] == True:
                     listOfMessages.append({
                         'messageText': '{},'.format(getUserBDres['name']),
-                        'messageAttachment': ''
+                    'messageAttachment': ''
                     })
                     typeMess = 'messageChatlistUpd'
-                elif text.lower() == 'убери беседу':
+                elif text.lower() == 'убери беседу' and getUserBDres['modStatus'] == True:
                     listOfMessages.append({
                         'messageText': '{},'.format(getUserBDres['name']),
                         'messageAttachment': ''
                     })
                     typeMess = 'messageChatlistDel'
-                elif text == 'выключить':
+                elif text == 'перезагрузка' and getUserBDres['admStatus'] == True:
                     listOfMessages.append({
                         'messageText': 'Ладно, пойду посплю..',
                         'messageAttachment': ''
                         })
                     typeMess = 'admClose'
                     rule = 'close'
+                elif text.count('?')>0:
+                    if text[0:text.find(' ')]=='почему' or text[0:len(text)-1]=='почему':
+                        listOfMessages.append({
+                            'messageText': media['replicas']['questionwhy'][random.randint(0, len(media['replicas']['questionwhy'])-1)] + ', ' + getUserBDres['name'],
+                            'messageAttachment': ''
+                            })
+                    elif text[0:text.find(' ')]== 'когда' or text[0:len(text)-1]=='когда':
+                        listOfMessages.append({
+                            'messageText': media['replicas']['questionwhen'][random.randint(0, len(media['replicas']['questionwhen'])-1)] + ', ' + getUserBDres['name'],
+                            'messageAttachment': ''
+                            })
+                    elif text[0:text.find(' ')]== 'как' or text[0:len(text)-1]=='как':
+                        listOfMessages.append({
+                            'messageText': media['replicas']['questionhow'][random.randint(0, len(media['replicas']['questionhow'])-1)] + ', ' + getUserBDres['name'],
+                            'messageAttachment': ''
+                            })
+                    elif text[0:text.find(' ')]== 'сколько' or text[0:len(text)-1]=='сколько':
+                        listOfMessages.append({
+                            'messageText': media['replicas']['questioncost'][random.randint(0, len(media['replicas']['questioncost'])-1)] + ', ' + getUserBDres['name'],
+                            'messageAttachment': ''
+                            })
+                    else:
+                        listOfMessages.append({
+                            'messageText': media['replicas']['questionsimple'][random.randint(0, len(media['replicas']['questionsimple'])-1)] + ', ' + getUserBDres['name'],
+                            'messageAttachment': ''
+                            })
+                    typeMess = 'Answer'
                 else:
                     listOfMessages.append({
                         'messageText': '{},'.format(getUserBDres['name']),
-                        'messageAttachment': media['img_admfail']
+                        'messageAttachment': media['attachment']['img_admfail']
                     })
                     typeMess = 'messageNotDefined'
         elif getUserBDres['banAttempt'] > 1:
@@ -351,7 +423,7 @@ def react(r):
         else: 
                 listOfMessages.append({
                     'messageText': '{} попытался нарушить табу беседы, за что был кикнут из беседы.\nПричина блокировки: {}'.format(getUserBDres['name'], getUserBDres['banAttempt']-1, getUserBDres['banReason']),
-                    'messageAttachment': media['img_bankick']
+                    'messageAttachment': media['attachment']['img_bankick']
                 })
                 rule, identify_user = 'kick', r['user_id']
     else:
@@ -363,7 +435,7 @@ def react(r):
             })
             listOfMessages.append({
                 'messageText': 'Нужно добавиться в беседу? Ох, тогда смотри статью: vk.com/@canarybot-rules',
-                'messageAttachment': media['img_standart']
+                'messageAttachment': media['attachment']['img_standart']
             })
     return  {'type': typeMess,
         'rule': rule,
