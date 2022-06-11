@@ -1,278 +1,84 @@
 import random
 class Media:
-    def __init__():
+    def __init__(self):
+        self.version = '015'
+        self.adms = [517114114]
         self.args = {
-            'version': 'preview',
-            'names': [
-                'канарейка','канари','каня','[club196752424|@canarybot]'
-            ],
-            'kind': {
-                'help': {
-                    'cmd': [
-                        'помощь', 'начать'
-                        ],
-                    'rule': 'null',
-                    'maxid': 0,
-                    'boolstr': 0,
-                    'replycount': 'cycle',
-                    'reply': [
-                        {
-                            'messageText': '{from_id_name}, вся нужная информация есть в этой статье: vk.com/@canarybot-rules',
-                            'messageAttachment': ''
-                        },
-                    ],
-                },
-                'ping': {
-                    'cmd': [
-                        'пинг', 'мяу', 'мрр', 'как ты', 'ты кто'
-                    ],
-                    'rule': 'null',
-                    'maxid': 0,
-                    'boolstr': 0,
-                    'replycount': 'random',
-                    'reply': [
-                        {
-                            'messageText': 'Мяу',
-                            'messageAttachment': ''
-                        },
-                        {
-                            'messageText': 'Мур',
-                            'messageAttachment': ''
-                        },
-                        {
-                            'messageText': 'Ась?',
-                            'messageAttachment': ''
-                        },
-                        {
-                            'messageText': 'Что такое, {from_id_name}?',
-                            'messageAttachment': ''
-                        },
-                        {
-                            'messageText': 'Ай авэ у.',
-                            'messageAttachment': ''
-                        },
-                    ],
-                },
-                'chat_review': {
-                    'cmd': [
-                        'инфа о беседе', 'чат инфо'
-                    ],
-                    'rule': 'chat_info',
-                    'maxid': 0,
-                    'boolstr': 0,
-                    'replycount': 'cycle',
-                    'reply': [
-                        {
-                            'messageText': 'Информация о беседе {chat_name}:',
-                            'messageAttachment': ''
-                        },
-                        {
-                            'messageText': 'Описание: {descr};\nКоличество участников: {member_count};\nКоличество участников в чёрном списке: {member_count_bl}',
-                            'messageAttachment': ''
-                        },
-                    ],
-                },
-                'chat_blacklist': {
-                    'cmd': [
-                        'инфа о чс', 'кто в чс', 'чс'
-                    ],
-                    'rule': 'chat_bl',
-                    'maxid': 0,
-                    'boolstr': 0,
-                    'replycount': 'cycle',
-                    'reply': [
-                        {
-                            'messageText': 'Чёрный список беседы "{chat_name}":',
-                            'messageAttachment': ''
-                        },
-                        {
-                            'messageText': '{black_list}',
-                            'messageAttachment': ''
-                        },
-                    ],
-                },
-                'chat_adminlist': {
-                    'cmd': [
-                        'инфа об админах', 'кто админ', 'чат админы', 'админы'
-                    ],
-                    'rule': 'chat_al',
-                    'maxid': 0,
-                    'boolstr': 0,
-                    'replycount': 'cycle',
-                    'reply':[
-                        {
-                            'messageText': 'Администраторы беседы "{chat_name}":',
-                            'messageAttachment': ''
-                        },
-                        {
-                            'messageText': '{admin_list}',
-                            'messageAttachment': ''
-                        },
-                    ],
-                }, 
-                'chat_online': {
-                    'cmd': [
-                        'кто онлайн', 'онлайн', 'кто в сети'
-                    ], 
-                    'rule': 'chat_online',
-                    'maxid': 0,
-                    'boolstr': 0,
-                    'replycount': 'cycle',
-                    'reply':[
-                        {
-                            'messageText': 'Вот пользователи в сети, {from_id_name}:',
-                            'messageAttachment': ''
-                        },
-                        {
-                            'messageText': '{online}',
-                            'messageAttachment': ''
-                        },
-                    ],
-                },
-                'chat_kick': {
-                    'cmd': [
-                        'кик'
-                    ], 
-                    'rule': 'chat_kick',
-                    'maxid': -1,
-                    'boolstr': 0,
-                    'replycount': 'random',
-                    'reply':[
-                        {
-                            'messageText': 'Исключаю пользователя...',
-                            'messageAttachment': ''
-                        },
-                    ],
-                },
-                'chat_ban': {
-                    'cmd': [
-                        'кик'
-                    ], 
-                    'rule': 'chat_ban',
-                    'maxid': -1,
-                    'boolstr': 0,
-                    'replycount': 'random',
-                    'reply':[
-                        {
-                            'messageText': 'Пользователь в чёрном списке. Нигадяй.',
-                            'messageAttachment': ''
-                        },
-                    ],
-                },
-                'chat_unban': {
-                    'cmd': [
-                        'кик'
-                    ], 
-                    'rule': 'chat_unban',
-                    'maxid': -1,
-                    'boolstr': 0,
-                    'replycount': 'random',
-                    'reply':[
-                        {
-                            'messageText': 'Выношу пользователя из списка. Неужели есть добрые люди...',
-                            'messageAttachment': ''
-                        },
-                    ],
-                },
-                'unknown': {
-                    'cmd': [
-                        '$$$ dont required $$$'
-                    ], 
-                    'rule': 'null',
-                    'maxid': 0,
-                    'boolstr': 0,
-                    'replycount': 'random',
-                    'reply':[
-                        {
-                            'messageText':'{from_id_name}, я тебя не поняла',
-                            'messageAttachment': ''
-                        },
-                        {
-                            'messageText':'{from_id_name}, БИП БОП БУП. БУП БИП?',
-                            'messageAttachment': ''
-                        },
-                    ]
-                },
-                """
-                'empty': {
-                    'cmd': [
-                        'empty'
-                    ], 
-                    'rule': 'null',
-                    'maxid': 0,
-                    'boolstr': 0,
-                    'reply':[
-                        {
-                            'messageText':'',
-                            'messageAttachment': ''
-                        }
-                    ]
-                },
-                {from_id_name}, {second_id_name}
-                {chat_name}, {descr}, {member_count}, {member_count_bl}
-                {admin_list}, {black_list}, {ban_reason}, {online}
-                {your_text}
-                """
+            'mentions': {
+                'release': ['[club195675828|@canarybot]'], 
+                'beta': ['betabot'],
+            },
+            'commands': {
+                'kick': ['кик', 'исключить', 'исключи', 'kick'],
+                'ban': ['бан', 'забанить', 'заблокировать', 'ban'],
+                'unban': ['разбан', 'разбанить', 'разблокировать', 'unban'],
+                'chat': ['чат', 'chat', 'конфа'],
+                'url': ['ссылка', 'сократи', 'link'],
+                'ver': ['version', 'версия'],
+                'search': ['поиск', 'search'],
+                'trans': ['translate', 'переведи'],
+                'weather': ['weather', 'погода'],
+                'betahelp': ['помощь', 'help'],
+                'adm': ['!адм'],
+                'rule': ['!правило', '!rule'],
+            },
+            'cmdargs': {
+                'chat_info': ['инфо', 'info', 'инфа'],
+                'chat_admins': ['админы', 'admins', 'адм'],
+                'chat_bl': ['bl', 'чс'],
+                'reboot': ['reboot', 'ребут'],
+                'updateadm': ['адм', 'adm'],
+                'updatevip': ['вип', 'vip'],
+                'rule_botnews': ['новости', 'news'],
+            },
+            'reactions': {
+                'ban_noids': ['Выделите сообщения пользователей для бана или добавьте упоминание/ссылку на них'],
+                'ban_one': ['Блокирую пользователя...'],
+                'ban_more': ['Блокирую пользователей...'],
+                'banadm': ['Не получится забанить, мне нельзя блокировать администраторов беседы'],
+                'selfban': ['Нет я саму себя банить точно не буду.'],
+                'selfkick': ['Если тебе это надо, то исключи самостоятельно :\'('],
+                'unban_noids': ['Выделите сообщения пользователей для разбана или добавьте упоминание/ссылку на них'],
+                'unban_one': ['Выношу пользователя из чёрного списка беседы...'],
+                'unban_more': ['Выношу пользователей из чёрного списка беседы...'],
+                'kick_noids': ['Выделите сообщения пользователей для кика или добавьте упоминание/ссылку на них'],
+                'kick_one': ['Исключаю пользователя...'],
+                'kick_more': ['Исключаю пользователей...'],
+                'kickadm': ['Не получилось кикнуть пользователя (Администратор беседы или её создатель).'],
+                'kicknoadm': ['Не получилось кикнуть пользователя (Сообществу не выдана роль администратора).'],
+                'kickfalse': ['Не получилось кикнуть пользователя (Пользователь не в беседе).'],
+                'unknown': ['Неизвестная команда, отправьте "[club195675828|@canarybot] помощь" для получения списка.'],
+                'ver': ['Канарейка | Чат-бот ВКонтакте, версия {}. Сделано [club195953234|Прокофьевым Андреем], 2020'.format(self.version)],
+                'result': ['Процедура завершена'],
+                'rule_att': ['Правило для вашей беседы обновлено.'],
+                'rule_empt': ['Такого правила не существует.'],
+                'noadmrole': ['Ошибка: у вас нет прав адмнистратора'],
+                'bannedURL': ['Ссылка заблокирована, обратитесь в Техподдержку, если вы владелец сайта.'],
+                'processingURL': ['Ссылка в процессе проверки, повторите позже.'],
+                'search': ['Результат поиска: '],
+                'betahelp': ['betabot kick *\nbetabot ban *\nbetabot unban *\nbetabot search string\nbetabot weather city\nbetabot translate *lang in two letters* *string*'],
+                'emp': [''],
+                'startst1': ['Ой, привет, {name}, почему ты пишешь мне?'],
+                'startst2': ['Нужно добавиться в беседу? Ох, тогда прочти статью: vk.com/@canarybot-rules'],
             }
         }
 
-    def define(self, **kwargs):
-        text, cmd, rule, maxid, string = kwargs['text'], '', 'null', 0, ''
-        for i in self.args.names:
-            #проверка на обращение к боту
-            if text[0:len(i)+1] == i + ' ':
-                #это точно обращение, значит прерываем функцию и обрабатываем тип команды
-                text = text[len(i)+1:len(text)]
-                break
+    def isCommand(self, command):
+        for key, value in self.args['mentions'].items():
+            if command in value:
+                return key
         else:
-            rule = 'unknown'
-            for cmd_key, cmd_value in self.args.cmd.items():
-                #смотрим типы команд
-                for cmd_string in cmd_value['cmd']:
-                    #сравнение текста с массивом типа
-                    #нужный тип, если текст равен ячейке массива
-                    if cmd_value['boolstr'] == 0 and text == cmd_string:
-                        break
-                    elif cmd_value['boolstr'] == 1 and text[0:len(cmd_string)] == cmd_string:
-                        string = text[len(string)+2]
-                        break
-                    else:
-                        pass
-                else:
-                    #rule - правка для обработчика, по сути для вставок по типу "{online}"
-                    #maxid - максимально допустимое число прикреплённых пользователей
-                    #-1 - неограниченное
-                    #0 - без вложений
-                    #остальные числа влияют как длина массива
-                    cmd, rule, maxid = cmd_key, cmd_value['rule'], cmd_value['maxid']
-                    break
-        return {
-            'cmd': cmd, 'rule': rule, 'maxids': maxid, 'string': string
-        }
-    def get(self, cmdkind, formatt):
-        if self.args['kind'][cmdkind]['replycount'] == 'random':
-            lim.append(self.args['kind'][cmdkind]['reply'][random.randint(0,len(setstr))].format(**formatt))
-        elif self.args['kind'][cmdkind]['replycount'] == 'cycle':
-            lim = []
-            for i in self.args['kind'][cmdkind]['reply']:
-                lim.append(i)
-        return lim
+            return ''
 
-    """
+    def typeCommand(self, command):
+        for key, value in self.args['commands'].items():
+            if command in value:
+                return key
+        else:
+            return 'unknown'
 
-    name начать / null
-    name помощь / null
-    name кто я / user_info
-    name кто это + юзер / user_info
-    name кто админ / chat_al
-    name кто в чс / chat_bl
-    name кто онлайн / chat_online
-    name чат / chat_review
-    name чат название / chat_name
-    name чат описание / chat_descr
-    name кик / chat_kick
-    name разбан / chat_unban
-    name бан / chat_ban
-    name ник / user_nickname
-    {standalone.name} -- для использования standalone
-    """
+    def get(self, key):
+        try:
+            return self.args['reactions'][key][random.randint(0,len(self.args['reactions'][key])-1)]
+        except:
+            return key
